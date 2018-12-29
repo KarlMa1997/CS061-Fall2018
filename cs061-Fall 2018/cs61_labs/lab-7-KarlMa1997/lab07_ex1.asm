@@ -1,0 +1,452 @@
+
+;=================================================
+; Name: Kaihang Ma
+; Email:  kma023@ucr.edu
+; GitHub username: KarlMa1997
+; 
+; Lab: lab 7
+; Lab section: 028
+; TA: jason
+;=================================================
+.ORIG x3000
+
+LD R1,SUB_1_3500
+JSRR R1
+ADD R6,R6,#1
+LD R3,SUB_2_4000
+JSRR R3
+
+AND R0,R0,#0
+LEA R0,NEWLINE3
+PUTS
+
+HALT
+
+
+
+NEWLINE3 .STRINGZ "\n"
+SUB_1_3500 .FILL x3500
+SUB_2_4000 .FILL x4000
+
+;=================================================
+;Subroutine: SUB_1_3500
+;Parameter: R6
+;Postcondition: subroutine for assn4
+;return value: none
+
+.ORIG x3500			
+ST R0,BACKUP_R0_x3500
+ST R1,BACKUP_R1_x3500
+;ST R2,BACKUP_R2_x3500
+ST R3,BACKUP_R3_x3500
+ST R4,BACKUP_R4_x3500
+ST R5,BACKUP_R5_x3500
+;ST R6,BACKUP_R6_x3500
+ST R7,BACKUP_R7_x3500
+
+LD R3,COUNTER
+AND R6,R6,#0
+
+START_LOOP
+  AND R6,R6,#0
+  LD R0,introMessagePtr
+  PUTS
+  
+  GETC
+  OUT
+  
+  AND R5,R5,#0		;CHECK POSITIVE SIGN
+  ADD R5,R5,R0
+  ADD R5,R5,#-10
+  BRz ERROR1
+  ADD R5,R5,#-6
+  ADD R5,R5,#-16
+  ADD R5,R5,#-11
+  BRz LOOP_POS
+  BRp CHECKNEG
+  
+  CHECKNEG
+    ADD R5,R5,#-2	;CHECK NEGATIVE SIGN
+    BRz LOOP_NEG
+    BRp CHECKNUM
+    
+  CHECKNUM
+    AND R5,R5,#0
+    ADD R5,R5,R0  
+    ADD R5,R5,#-16
+    ADD R5,R5,#-16
+    ADD R5,R5,#-16
+    BRn ERROR1
+    ADD R5,R5,#-9
+    BRp ERROR1
+    ADD R3,R3,#-1
+    BR LOOP_NUM
+    
+  LOOP_POS
+    GETC
+    OUT
+    ;CONVERT ASCII TO DECIMAL
+    ADD R0,R0,#-10
+    BRz HALTPROGRAM
+    ADD R0,R0,#-6
+    ADD R0,R0,#-16
+    ADD R0,R0,#-16
+    BRn ERROR1
+    ADD R4,R0,#0
+    ADD R4,R4,#-9
+    BRp ERROR1
+    ADD R1,R6,R6
+    ADD R6,R6,R6
+    ADD R6,R6,R6 
+    ADD R6,R6,R6 
+    ADD R6,R1,R6 
+    ADD R6,R6,R0
+    ADD R3,R3,#-1
+   BRp LOOP_POS
+   BR HALTPROGRAM
+   
+   LOOP_NEG
+    GETC
+    OUT
+    ADD R0,R0,#-10
+    BRz TWOCOM
+    ADD R0,R0,#-6
+    ADD R0,R0,#-16
+    ADD R0,R0,#-16
+    BRn ERROR1
+    ADD R4,R0,#0
+    ADD R4,R4,#-9
+    BRp ERROR1
+    ADD R1,R6,R6 
+    ADD R6,R6,R6
+    ADD R6,R6,R6 
+    ADD R6,R6,R6 
+    ADD R6,R1,R6 
+    ADD R6,R6,R0
+    ADD R3,R3,#-1
+   BRp LOOP_NEG
+   BR TWOCOM
+    
+   LOOP_NUM
+    ADD R0,R0,#-10
+    BRz HALTPROGRAM
+    ADD R0,R0,#-6
+    ADD R0,R0,#-16
+    ADD R0,R0,#-16
+    BRn ERROR1
+    ADD R4,R0,#0
+    ADD R4,R4,#-9
+    BRp ERROR1
+    ADD R1,R6,R6 
+    ADD R6,R6,R6
+    ADD R6,R6,R6 
+    ADD R6,R6,R6 
+    ADD R6,R1,R6 
+    ADD R6,R6,R0
+    BR LOOP_POS
+    
+   TWOCOM
+    ADD R2,R2,#1
+    NOT R6,R6
+    ADD R6,R6,#1
+    BR HALTPROGRAM
+  
+   ERROR1
+    LEA R0,NEWLINE
+    PUTS
+    LD R0,errorMessagePtr
+    PUTS
+   BR START_LOOP
+   
+  HALTPROGRAM
+    LEA R0,NEWLINE
+    PUTS
+;=====================================================
+LD R0,BACKUP_R0_x3500
+LD R1,BACKUP_R1_x3500
+;LD R2,BACKUP_R2_x3500
+LD R3,BACKUP_R3_x3500
+LD R4,BACKUP_R4_x3500
+LD R5,BACKUP_R5_x3500
+;LD R6,BACKUP_R6_x3500
+LD R7,BACKUP_R7_x3500
+
+RET
+;---------------	
+;Data x3500
+;---------------
+BACKUP_R0_x3500 .BLKW #1
+BACKUP_R1_x3500 .BLKW #1
+BACKUP_R2_x3500 .BLKW #1
+BACKUP_R3_x3500 .BLKW #1
+BACKUP_R4_x3500 .BLKW #1
+BACKUP_R5_x3500 .BLKW #1
+;BACKUP_R6_x3500 .BLKW #1
+BACKUP_R7_x3500 .BLKW #1
+introMessagePtr		.FILL x6000
+errorMessagePtr		.FILL x6100
+NEWLINE .STRINGZ "\n"
+COUNTER .FILL #5
+.ORIG x6000
+intro .STRINGZ	"Input a positive or negative decimal number (max 5 digits), followed by ENTER\n"
+.ORIG x6100	
+error_msg1	.STRINGZ	"ERROR INVALID INPUT\n"
+
+;=======================================================
+;=================================================
+;Subroutine: SUB_2_4000
+;Parameter: NONE
+;Postcondition: INVERSE subroutine for assn4
+;return value: none
+.ORIG x4000			
+ST R0,BACKUP_R0_x4000
+ST R1,BACKUP_R1_x4000
+;ST R2,BACKUP_R2_x4000
+ST R3,BACKUP_R3_x4000
+ST R4,BACKUP_R4_x4000
+ST R5,BACKUP_R5_x4000
+;ST R6,BACKUP_R6_x4000
+ST R7,BACKUP_R7_x4000
+;-----CODES FOR SUBROUTINE 2-------------------------
+AND R1,R1,#0
+ADD R1,R1,R6   ;R1 IS THE TEMP VALUE
+AND R4,R4,#0   ;R4 IS THE COUNTER
+AND R5,R5,#0   ;R5 IS THE FLAG
+;---------------R2 IS THE LOOP VALUE
+
+ADD R2,R2,#0
+BRp PRINTNEG
+BRz LOOP_10000_TEMP
+
+PRINTNEG
+  LD R3,NEGSIGNP
+  AND R0,R0,#0
+  ADD R0,R0,R3
+  OUT
+  NOT R6,R6
+  ADD R6,R6,#3
+  
+LOOP_10000_TEMP
+  ADD R5,R5,#0
+  LD R2,NEG10000
+  ADD R1,R1,R2 
+    BRn PRINTZERO_10000
+    BRz PRINT10000
+    BRp LOOP_10000
+    
+LOOP_10000			;
+  LD R2,NEG10000
+  ADD R4,R4,#1
+  ADD R6,R6,R2
+  ADD R1,R1,R2
+    BRp LOOP_10000
+    BR PRINT10000
+  
+PRINT10000
+  AND R0,R0,#0
+  ADD R5,R5,#1
+  ADD R0,R0,R4
+  LD R2,HEX30
+  ADD R0,R0,R2
+  OUT
+
+LOOP_1000_TEMP
+  AND R4,R4,#0
+  LD R2,NEG1000
+  AND R1,R1,#0
+  ADD R1,R1,R6
+  ADD R1,R1,R2
+    BRn PRINTZERO_1000
+    BRz PRINT1000
+    BRp LOOP_1000
+ 
+LOOP_1000
+  LD R2,NEG1000
+  ADD R4,R4,#1
+  ADD R6,R6,R2
+  ADD R1,R1,R2
+    BRp LOOP_1000
+    BR PRINT1000
+  
+PRINT1000
+  AND R0,R0,#0
+  ADD R5,R5,#1
+  ADD R0,R0,R4
+  LD R2,HEX30
+  ADD R0,R0,R2
+  OUT
+  
+;100LOOP
+LOOP_100_TEMP
+  AND R4,R4,#0
+  LD R2,NEG100
+  AND R1,R1,#0
+  ADD R1,R1,R6
+  ADD R1,R1,R2
+    BRn PRINTZERO_100
+    BRz PRINT100
+    BRp LOOP_100
+ 
+LOOP_100
+  LD R2,NEG100
+  ADD R4,R4,#1
+  ADD R6,R6,R2
+  ADD R1,R1,R2
+    BRp LOOP_100
+    BR PRINT100
+  
+PRINT100
+  AND R0,R0,#0
+  ADD R5,R5,#1
+  ADD R0,R0,R4
+  LD R2,HEX30
+  ADD R0,R0,R2
+  OUT
+  
+  
+;10LOOP
+LOOP_10_TEMP
+  AND R4,R4,#0
+  LD R2,NEG10
+  AND R1,R1,#0
+  ADD R1,R1,R6
+  ADD R1,R1,R2
+    BRn PRINTZERO_10
+    BRz PRINT10
+    BRp LOOP_10
+ 
+LOOP_10
+  LD R2,NEG10
+  ADD R4,R4,#1
+  ADD R6,R6,R2
+  ADD R1,R1,R2
+    BRp LOOP_10
+    BR PRINT10
+  
+PRINT10
+  AND R0,R0,#0
+  ADD R5,R5,#1
+  ADD R0,R0,R4
+  LD R2,HEX30
+  ADD R0,R0,R2
+  OUT
+;1LOOP
+
+LOOP_1_TEMP
+  AND R4,R4,#0
+  LD R2,NEG1
+  AND R1,R1,#0
+  ADD R1,R1,R6
+  ADD R1,R1,R2
+    BRn PRINTZERO_1
+    BRz PRINT1
+    BRp LOOP_1
+ 
+LOOP_1
+  LD R2,NEG1
+  ADD R4,R4,#1
+  ADD R6,R6,R2
+  ADD R1,R1,R2
+    BRp LOOP_1
+    BR PRINT1
+  
+PRINT1
+  AND R0,R0,#0
+  ADD R5,R5,#1
+  ADD R0,R0,R4
+  LD R2,HEX30
+  ADD R0,R0,R2
+  OUT
+  LEA R0,NEWLINE2
+  PUTS
+  HALT
+END_PRINT1
+  
+PRINTZERO_10000
+  AND R0,R0,#0
+  ADD R5,R5,#0
+  BRz #5
+  ADD R4,R4,#0
+  BRp #0
+  LD R2,DEC0
+  ADD R0,R0,R2
+  OUT
+  BR LOOP_1000_TEMP
+
+PRINTZERO_1000
+  AND R0,R0,#0
+  ADD R5,R5,#0
+  BRz #5
+  ADD R4,R4,#0
+  BRp #0
+  LD R2,DEC0
+  ADD  R0,R0,R2
+  OUT
+  BR LOOP_100_TEMP
+  
+PRINTZERO_100
+  AND R0,R0,#0
+  ADD R5,R5,#0
+  BRz #5
+  ADD R4,R4,#0
+  BRz #0
+  LD R2,DEC0
+  ADD R0,R0,R2
+  OUT
+  BR LOOP_10_TEMP
+
+PRINTZERO_10
+  AND R0,R0,#0
+  ADD R5,R5,#0
+  BRz #5
+  ADD R4,R4,#0
+  BRz #0
+  LD R2,DEC0
+  ADD R0,R0,R2
+  OUT
+  BR LOOP_1_TEMP
+
+PRINTZERO_1
+  AND R0,R0,#0
+  ADD R5,R5,#0
+  BRz #5
+  ADD R4,R4,#0
+  BRp #0
+  LD R2,DEC0
+  ADD R0,R0,R2
+  OUT
+  
+
+
+;=====================================================
+LD R0,BACKUP_R0_x4000
+LD R1,BACKUP_R1_x4000
+LD R2,BACKUP_R2_x4000
+LD R3,BACKUP_R3_x4000
+LD R4,BACKUP_R4_x4000
+LD R5,BACKUP_R5_x4000
+;LD R6,BACKUP_R6_x4000
+LD R7,BACKUP_R7_x4000
+
+
+;---------------	
+;Data x4000
+;---------------
+BACKUP_R0_x4000 .BLKW #1
+BACKUP_R1_x4000 .BLKW #1
+BACKUP_R2_x4000 .BLKW #1
+BACKUP_R3_x4000 .BLKW #1
+BACKUP_R4_x4000 .BLKW #1
+BACKUP_R5_x4000 .BLKW #1
+;BACKUP_R6_x4000 .BLKW #1
+BACKUP_R7_x4000 .BLKW #1
+NEG10000 .FILL #-10000
+NEG1000 .FILL #-1000
+NEG100 .FILL #-100
+NEG10 .FILL #-10
+NEG1 .FILL #-1
+NEGSIGN .FILL #-45
+NEGSIGNP .FILL #45
+HEX30 .FILL x30
+DEC0 .FILL #48
+NEWLINE2 .STRINGZ "\n"
